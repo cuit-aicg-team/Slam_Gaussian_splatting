@@ -551,7 +551,7 @@ namespace ORB_SLAM3
             }
         }
     }
-
+     //将特征点平均，采用4叉树的方式，直到节点数等于需要特征点数目，最终一个节点里面保留一个特征点
     vector<cv::KeyPoint> ORBextractor::DistributeOctTree(const vector<cv::KeyPoint>& vToDistributeKeys, const int &minX,
                                                          const int &maxX, const int &minY, const int &maxY, const int &N, const int &level)
     {
@@ -561,7 +561,6 @@ namespace ORB_SLAM3
         const float hX = static_cast<float>(maxX-minX)/nIni;
 
         list<ExtractorNode> lNodes;
-
         vector<ExtractorNode*> vpIniNodes;
         vpIniNodes.resize(nIni);
 

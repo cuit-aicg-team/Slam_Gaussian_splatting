@@ -188,8 +188,7 @@ void LocalMapping::Run()
 
 
                 // Check redundant local Keyframes
-                KeyFrameCulling();
-
+                // KeyFrameCulling();
 #ifdef REGISTER_TIMES
                 std::chrono::steady_clock::time_point time_EndKFCulling = std::chrono::steady_clock::now();
 
@@ -911,11 +910,11 @@ void LocalMapping::KeyFrameCulling()
 
     float redundant_th;
     if(!mbInertial)
-        redundant_th = 0.9;
+        redundant_th = 1.2;
     else if (mbMonocular)
-        redundant_th = 0.9;
+        redundant_th = 1.2;
     else
-        redundant_th = 0.5;
+        redundant_th = 1.2;
 
     const bool bInitImu = mpAtlas->isImuInitialized();
     int count=0;

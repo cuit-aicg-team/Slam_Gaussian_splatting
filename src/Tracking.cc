@@ -3142,12 +3142,12 @@ bool Tracking::NeedNewKeyFrame()
     if(mSensor==System::MONOCULAR)
         thRefRatio = 0.9f;
 
-    if(mpCamera2) thRefRatio = 0.75f;
+    if(mpCamera2) thRefRatio = 0.90f;
 
     if(mSensor==System::IMU_MONOCULAR)
     {
         if(mnMatchesInliers>350) // Points tracked from the local map
-            thRefRatio = 0.75f;
+            thRefRatio = 0.90f;
         else
             thRefRatio = 0.90f;
     }
@@ -3183,8 +3183,9 @@ bool Tracking::NeedNewKeyFrame()
         c4=true;
     else
         c4=false;
-
-    if(((c1a||c1b||c1c) && c2)||c3 ||c4)
+   
+    return true;
+    if(((c1a||c1b||c1c)&&c2) ||c3 ||c4)
     {
         // If the mapping accepts keyframes, insert keyframe.
         // Otherwise send a signal to interrupt BA
@@ -3197,7 +3198,7 @@ bool Tracking::NeedNewKeyFrame()
             mpLocalMapper->InterruptBA();
             if(mSensor!=System::MONOCULAR  && mSensor!=System::IMU_MONOCULAR)
             {
-                if(mpLocalMapper->KeyframesInQueue()<3)
+                if(mpLocalMapper->KeyframesInQueue()<6)
                     return true;
                 else
                     return false;

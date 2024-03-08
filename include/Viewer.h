@@ -74,7 +74,6 @@ private:
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;
-
     // 1/fps in ms
     double mT;
     float mImageWidth, mImageHeight;

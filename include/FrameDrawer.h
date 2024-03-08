@@ -30,7 +30,6 @@
 #include<mutex>
 #include <unordered_set>
 
-
 namespace ORB_SLAM3
 {
 

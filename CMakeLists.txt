@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(ORB_SLAM3)
+set(CMAKE_CXX_STANDARD 14)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -30,7 +31,7 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-find_package(OpenCV 4.4)
+find_package(OpenCV 4.8)
    if(NOT OpenCV_FOUND)
       message(FATAL_ERROR "OpenCV > 4.4 not found.")
    endif()
@@ -70,6 +71,8 @@ src/MapDrawer.cc
 src/Optimizer.cc
 src/Frame.cc
 src/KeyFrameDatabase.cc
+src/ImageColmap.cpp
+src/Points3DColmap.cpp
 src/Sim3Solver.cc
 src/Viewer.cc
 src/ImuTypes.cc
@@ -102,6 +105,8 @@ include/Sim3Solver.h
 include/Viewer.h
 include/ImuTypes.h
 include/G2oTypes.h
+include/ImageColmap.h
+include/Points3DColmap.h
 include/CameraModels/GeometricCamera.h
 include/CameraModels/Pinhole.h
 include/CameraModels/KannalaBrandt8.h

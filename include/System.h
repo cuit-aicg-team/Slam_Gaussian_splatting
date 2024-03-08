@@ -75,6 +75,8 @@ class Viewer;
 class FrameDrawer;
 class MapDrawer;
 class Atlas;
+// class ImageColmap;
+// class Points3DColmap;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
@@ -184,7 +186,7 @@ public:
 
     void ChangeDataset();
 
-    float GetImageScale();
+    float GetImageScale(); 
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);

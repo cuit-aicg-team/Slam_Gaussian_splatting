@@ -337,6 +337,21 @@ set<MapPoint*> KeyFrame::GetMapPoints()
     return s;
 }
 
+map<size_t,MapPoint*> KeyFrame::GetMapHashPoints()
+{
+    unique_lock<mutex> lock(mMutexFeatures);
+    map<size_t,MapPoint*> map_ret;
+    for(size_t i=0, iend=mvpMapPoints.size(); i<iend; i++)
+    {
+        if(!mvpMapPoints[i])
+            continue;
+        MapPoint* pMP = mvpMapPoints[i];
+        if(!pMP->isBad())
+            map_ret[i]=pMP;
+    }
+    return map_ret;
+}
+
 int KeyFrame::TrackedMapPoints(const int &minObs)
 {
     unique_lock<mutex> lock(mMutexFeatures);

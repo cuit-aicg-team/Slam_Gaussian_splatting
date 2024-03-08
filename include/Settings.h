@@ -122,6 +122,9 @@ namespace ORB_SLAM3 {
         cv::Mat M1r() {return M1r_;}
         cv::Mat M2r() {return M2r_;}
 
+        cv::Size originalImSize_, newImSize_;
+        GeometricCamera* originalCalib1_, *originalCalib2_;
+
     private:
         template<typename T>
         T readParameter(cv::FileStorage& fSettings, const std::string& name, bool& found,const bool required = true){
@@ -163,10 +166,8 @@ namespace ORB_SLAM3 {
          * Visual stuff
          */
         GeometricCamera* calibration1_, *calibration2_;   //Camera calibration
-        GeometricCamera* originalCalib1_, *originalCalib2_;
         std::vector<float> vPinHoleDistorsion1_, vPinHoleDistorsion2_;
 
-        cv::Size originalImSize_, newImSize_;
         float fps_;
         bool bRGB_;
 

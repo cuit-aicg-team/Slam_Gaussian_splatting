@@ -21,6 +21,7 @@
 #include<fstream>
 #include<chrono>
 
+#include "include/ImuTypes.h"
 #include<opencv2/core/core.hpp>
 
 #include<System.h>
@@ -64,11 +65,12 @@ int main(int argc, char **argv)
         cout << "Loading images for sequence " << seq << "...";
         LoadImages(string(argv[(2*seq)+3]) + "/mav0/cam0/data", string(argv[(2*seq)+4]), vstrImageFilenames[seq], vTimestampsCam[seq]);
         cout << "LOADED!" << endl;
-
+       
         nImages[seq] = vstrImageFilenames[seq].size();
+        
         tot_images += nImages[seq];
     }
-
+ 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
     vTimesTrack.resize(tot_images);
@@ -80,7 +82,7 @@ int main(int argc, char **argv)
     int fps = 20;
     float dT = 1.f/fps;
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, false);
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true);
     float imageScale = SLAM.GetImageScale();
 
     double t_resize = 0.f;
@@ -88,17 +90,16 @@ int main(int argc, char **argv)
 
     for (seq = 0; seq<num_seq; seq++)
     {
-
+       
         // Main loop
         cv::Mat im;
         int proccIm = 0;
         for(int ni=0; ni<nImages[seq]; ni++, proccIm++)
         {
-
+           
             // Read image from file
             im = cv::imread(vstrImageFilenames[seq][ni],cv::IMREAD_UNCHANGED); //,CV_LOAD_IMAGE_UNCHANGED);
             double tframe = vTimestampsCam[seq][ni];
-
             if(im.empty())
             {
                 cerr << endl << "Failed to load image at: "
@@ -137,7 +138,13 @@ int main(int argc, char **argv)
 
             // Pass the image to the SLAM system
             // cout << "tframe = " << tframe << endl;
-            SLAM.TrackMonocular(im,tframe); // TODO change to monocular_inertial
+            std::string img_name=vstrImageFilenames[seq][ni]; 
+            std::string delimiter = "/";  
+            size_t pos = 0;  
+            while ((pos = img_name.find(delimiter)) != std::string::npos) {  
+                img_name.erase(0, pos + delimiter.length());  
+            }  
+            SLAM.TrackMonocular(im,tframe,vector<ORB_SLAM3::IMU::Point>(),img_name); // TODO change to monocular_inertial
 
     #ifdef COMPILEDWITHC11
             std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -185,7 +192,6 @@ int main(int argc, char **argv)
     }
     // Stop all threads
     SLAM.Shutdown();
-
     // Save camera trajectory
     if (bFileName)
     {

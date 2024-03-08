@@ -25,6 +25,8 @@
 
 #include<System.h>
 
+#include "include/ImuTypes.h"
+
 using namespace std;
 
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
@@ -99,9 +101,14 @@ int main(int argc, char **argv)
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
-
+        std::string img_name=vstrImageFilenamesRGB[ni]; 
+        std::string delimiter = "/";  
+        size_t pos = 0;  
+        while ((pos = img_name.find(delimiter)) != std::string::npos) {  
+            img_name.erase(0, pos + delimiter.length());  
+        }  
         // Pass the image to the SLAM system
-        SLAM.TrackRGBD(imRGB,imD,tframe);
+        SLAM.TrackRGBD(imRGB,imD,tframe,vector<ORB_SLAM3::IMU::Point>(),img_name);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
