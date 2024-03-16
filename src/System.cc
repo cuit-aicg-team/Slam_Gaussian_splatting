@@ -128,7 +128,7 @@ namespace ORB_SLAM3
     {
         cout << "Starting to write the save saveCameraPonit "<< endl;
         // 写出数据
-        std::string filename = "orbData/sparse/0/";
+        std::string filename = OUTPUT_TXT_PATH;
         std::string camera_path = filename + "cameras.txt";
         std::string folder = directoryFromPath(filename);
         if (!directoryExists(folder))
@@ -154,10 +154,74 @@ namespace ORB_SLAM3
         cout << "end to write the save saveCameraPonit " << endl;
     }
 
-    void saveImageColmapDate(const vector<KeyFrame *> vpKFs)
+    bool DeleteDirectory(const std::string& path) {  
+        DIR* dir;  
+        struct dirent* ent;  
+        std::string fullPath;  
+        bool result = true;  
+    
+        dir = opendir(path.c_str());  
+        if (dir != nullptr) {  
+            while ((ent = readdir(dir)) != nullptr) {  
+                if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {  
+                    continue;  
+                }  
+    
+                fullPath = path + "/" + ent->d_name;  
+                if (ent->d_type == DT_DIR) {  
+                    // 递归删除子目录  
+                    result = DeleteDirectory(fullPath);  
+                } else {  
+                    // 删除文件  
+                    result = (unlink(fullPath.c_str()) == 0);  
+                }  
+    
+                if (!result) {  
+                    break;  
+                }  
+            }  
+            closedir(dir);  
+        }  
+        return result;  
+    }  
+
+    bool copyFileToFolder(const char* sourceFile, const char* destinationFolder) {  
+        // 构造目标文件的完整路径  
+        char newFilePath[1024];  
+        snprintf(newFilePath, sizeof(newFilePath), "%s/%s", destinationFolder, sourceFile);  
+    
+        // 打开源文件和目标文件  
+        std::ifstream srcFile(sourceFile, std::ios::binary);  
+        if (!srcFile) {  
+            std::cerr << "无法打开源文件: " << sourceFile << std::endl;  
+            return false;  
+        }  
+    
+        std::ofstream dstFile(newFilePath, std::ios::binary);  
+        if (!dstFile) {  
+            std::cerr << "无法创建目标文件: " << newFilePath << std::endl;  
+            srcFile.close();  
+            return false;  
+        }  
+    
+        // 使用C++的文件流复制文件内容  
+        dstFile << srcFile.rdbuf();  
+    
+        // 关闭文件  
+        srcFile.close();  
+        dstFile.close();  
+    
+        std::cout << "文件已复制到: " << newFilePath << std::endl;  
+        return true;  
+    }  
+  
+
+    void saveImageColmapDate(const vector<KeyFrame *> vpKFs,string input_file_path)
     {
         cout << "Starting to write the save saveImageColmapDate " << endl;
         std::vector<Points3DColmap> pointsData;
+        //存储获得关键帧图片
+        DeleteDirectory(OUTPUT_IMAGE_PATH);
         ///* Image list with two lines of data per image :
         //   IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME
         //   POINTS2D[] as(X, Y, POINT3D_ID)
@@ -168,7 +232,7 @@ namespace ORB_SLAM3
             KeyFrame *pKF = vpKFs[i];
             ImageColmap image1;
             Sophus::SE3f postPose = pKF->GetPose();
-
+            copyFileToFolder((input_file_path+"/"+pKF->mNameFile).c_str(),OUTPUT_IMAGE_PATH.c_str());
             // std::cout << "w:" << q1.w << ", x:" << q1.x << ", y:" << q1.y << ", z:" << q1.z << "\n";
             float camera_pr[] = {postPose.unit_quaternion().w(), postPose.unit_quaternion().x(), postPose.unit_quaternion().y(), postPose.unit_quaternion().z(),
                                  postPose.translation()[0], postPose.translation()[1], postPose.translation()[2]};
@@ -192,7 +256,7 @@ namespace ORB_SLAM3
             image1.writeImageDate(pKF->mNameFile, pKF->mnId, 1, camera_pr, data1);
             imageData.push_back(image1);
         }
-        writeColmapDate("orbData/sparse/0/", imageData, pointsData);
+        writeColmapDate(OUTPUT_TXT_PATH, imageData, pointsData);
         cout << "End to write the save saveImageColmapDate " << endl;
     }
 
@@ -224,7 +288,7 @@ namespace ORB_SLAM3
             pointsData.push_back(point_3d);
         }
         std::vector<ImageColmap> imageData;
-        writeColmapDate("orbData/sparse/0/", imageData, pointsData);
+        writeColmapDate(OUTPUT_TXT_PATH, imageData, pointsData);
         cout << "End to write the save savePoint3DColmapDate " << endl;
     }
 
@@ -725,7 +789,7 @@ namespace ORB_SLAM3
         const vector<KeyFrame *> vpKFs = pActiveMap->GetAllKeyFrames();
         set<MapPoint *> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
         saveCameraPonit(settings_);
-        saveImageColmapDate(vpKFs);
+        saveImageColmapDate(vpKFs,input_file_path);
         savePoint3DColmapDate(vpMPs,spRefMPs);
 
 

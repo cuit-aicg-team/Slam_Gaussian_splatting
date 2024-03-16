@@ -27,6 +27,12 @@
 #include<string>
 #include<thread>
 #include<opencv2/core/core.hpp>
+#include <iostream>  
+#include <dirent.h>  
+#include <unistd.h>
+#include <fstream>  
+#include <cstdlib> // 为了使用std::system调用外部命令（可选）  
+#include <cstdio>   // 为了使用FILE* 和相关函数 
 
 #include "Tracking.h"
 #include "FrameDrawer.h"
@@ -39,7 +45,8 @@
 #include "Viewer.h"
 #include "ImuTypes.h"
 #include "Settings.h"
-
+static const string OUTPUT_TXT_PATH = "orbData/sparse/0/"; 
+static const string OUTPUT_IMAGE_PATH = "orbData/images/"; 
 
 namespace ORB_SLAM3
 {
@@ -101,6 +108,7 @@ public:
         BINARY_FILE=1,
     };
 
+    string input_file_path;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.

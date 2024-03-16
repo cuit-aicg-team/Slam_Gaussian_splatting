@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR,true);
     float imageScale = SLAM.GetImageScale();
+    SLAM.input_file_path=string(argv[3]);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
