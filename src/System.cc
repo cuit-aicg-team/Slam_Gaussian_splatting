@@ -45,7 +45,8 @@ namespace ORB_SLAM3
 
     void makeDirectory(const std::string &directory)
     {
-        int status = mkdir(directory.c_str(), S_IRWXU | S_IRWXG | S_IRWXO); // 创建文件夹，并设置权限为读写执行
+	 cout<<directory<<" make path"<<endl;   
+        int status = mkdir(directory.c_str(), 0777); // 创建文件夹，并设置权
         if (status == -1)
         {
             // 创建失败
@@ -187,8 +188,7 @@ namespace ORB_SLAM3
 
     bool copyFileToFolder(const char* sourceFile, const char* destinationFolder) {  
         // 构造目标文件的完整路径  
-        char newFilePath[1024];  
-        snprintf(newFilePath, sizeof(newFilePath), "%s/%s", destinationFolder, sourceFile);  
+        //cout << sourceFile << "  path " << destinationFolder << endl;  
     
         // 打开源文件和目标文件  
         std::ifstream srcFile(sourceFile, std::ios::binary);  
@@ -197,9 +197,9 @@ namespace ORB_SLAM3
             return false;  
         }  
     
-        std::ofstream dstFile(newFilePath, std::ios::binary);  
+        std::ofstream dstFile(destinationFolder, std::ios::binary);  
         if (!dstFile) {  
-            std::cerr << "无法创建目标文件: " << newFilePath << std::endl;  
+            std::cerr << "无法创建目标文件: " << destinationFolder << std::endl;  
             srcFile.close();  
             return false;  
         }  
@@ -211,7 +211,7 @@ namespace ORB_SLAM3
         srcFile.close();  
         dstFile.close();  
     
-        std::cout << "文件已复制到: " << newFilePath << std::endl;  
+       // std::cout << "文件已复制到: " <<destinationFolder << std::endl;  
         return true;  
     }  
   
@@ -232,7 +232,7 @@ namespace ORB_SLAM3
             KeyFrame *pKF = vpKFs[i];
             ImageColmap image1;
             Sophus::SE3f postPose = pKF->GetPose();
-            copyFileToFolder((input_file_path+"/"+pKF->mNameFile).c_str(),OUTPUT_IMAGE_PATH.c_str());
+            copyFileToFolder((input_file_path+"/"+pKF->mNameFile).c_str(),(OUTPUT_IMAGE_PATH+pKF->mNameFile).c_str());
             // std::cout << "w:" << q1.w << ", x:" << q1.x << ", y:" << q1.y << ", z:" << q1.z << "\n";
             float camera_pr[] = {postPose.unit_quaternion().w(), postPose.unit_quaternion().x(), postPose.unit_quaternion().y(), postPose.unit_quaternion().z(),
                                  postPose.translation()[0], postPose.translation()[1], postPose.translation()[2]};
