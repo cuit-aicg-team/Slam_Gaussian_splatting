@@ -21,6 +21,7 @@
 #include<fstream>
 #include<chrono>
 
+#include "include/ImuTypes.h"
 #include<opencv2/core/core.hpp>
 
 #include<System.h>
@@ -49,7 +50,7 @@ int main(int argc, char **argv)
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR,true);
     float imageScale = SLAM.GetImageScale();
-    SLAM.input_file_path=string(argv[3]);
+    SLAM.input_file_path=string(argv[3]).append("/input");
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -105,9 +106,14 @@ int main(int argc, char **argv)
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
-
+	std::string img_name=vstrImageFilenames[ni];
+        std::string delimiter ="/";
+	size_t pos = 0;
+	while((pos = img_name.find(delimiter)) != std::string::npos){
+	  img_name.erase(0,pos + delimiter.length());
+	}
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
+        SLAM.TrackMonocular(im,tframe,vector<ORB_SLAM3::IMU::Point>(),img_name);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -161,10 +167,10 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
     f.open(strFile.c_str());
 
     // skip first three lines
-    string s0;
-    getline(f,s0);
-    getline(f,s0);
-    getline(f,s0);
+    //string s0;
+    //getline(f,s0);
+    //getline(f,s0);
+    //getline(f,s0);
 
     while(!f.eof())
     {

@@ -45,7 +45,12 @@ namespace ORB_SLAM3
 
     void makeDirectory(const std::string &directory)
     {
-	 cout<<directory<<" make path"<<endl;   
+	 cout<<directory<<" make path"<<endl;
+         mode_t mode = S_IRWXU | S_IROTH | S_IRWXG;
+        if(chmod(directory.c_str(),mode)==-1){
+	  cout<<"open permission fialed "<<strerror(errno)<<endl;
+	  return;
+	}		
         int status = mkdir(directory.c_str(), 0777); // 创建文件夹，并设置权
         if (status == -1)
         {
@@ -197,9 +202,9 @@ namespace ORB_SLAM3
             return false;  
         }  
     
-        std::ofstream dstFile(destinationFolder, std::ios::binary);  
+        std::ofstream dstFile(destinationFolder, std::ios::out | std::ios::binary);  
         if (!dstFile) {  
-            std::cerr << "无法创建目标文件: " << destinationFolder << std::endl;  
+            std::cerr << "无法创建目标文件: " << destinationFolder <<" error "<<strerror(errno) <<std::endl;  
             srcFile.close();  
             return false;  
         }  
