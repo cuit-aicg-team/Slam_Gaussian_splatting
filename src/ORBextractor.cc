@@ -70,6 +70,7 @@ namespace ORB_SLAM3
 
     const int PATCH_SIZE = 31;
     const int HALF_PATCH_SIZE = 15;
+    //为描述子和提取特征点补的padding厚度
     const int EDGE_THRESHOLD = 19;
 
 
@@ -145,7 +146,7 @@ namespace ORB_SLAM3
 #undef GET_VALUE
     }
 
-
+     //计算特征描述子的256对坐标
     static int bit_pattern_31_[256*4] =
             {
                     8,-3, 9,5/*mean (0), correlation (0)*/,
@@ -821,7 +822,7 @@ namespace ORB_SLAM3
                         maxX = maxBorderX;
 
                     vector<cv::KeyPoint> vKeysCell;
-
+                    //高值信筛选
                     FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
                          vKeysCell,iniThFAST,true);
 
@@ -838,7 +839,7 @@ namespace ORB_SLAM3
                              vKeysCell,iniThFAST,true);
                     }*/
 
-
+                    //低值信筛选
                     if(vKeysCell.empty())
                     {
                         FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
@@ -1165,7 +1166,7 @@ namespace ORB_SLAM3
         //cout << "[ORBextractor]: extracted " << _keypoints.size() << " KeyPoints" << endl;
         return monoIndex;
     }
-
+     
     void ORBextractor::ComputePyramid(cv::Mat image)
     {
         for (int level = 0; level < nlevels; ++level)
@@ -1180,7 +1181,7 @@ namespace ORB_SLAM3
             if( level != 0 )
             {
                 resize(mvImagePyramid[level-1], mvImagePyramid[level], sz, 0, 0, INTER_LINEAR);
-
+                //opencv的复制图片并添加的padding的方法
                 copyMakeBorder(mvImagePyramid[level], temp, EDGE_THRESHOLD, EDGE_THRESHOLD, EDGE_THRESHOLD, EDGE_THRESHOLD,
                                BORDER_REFLECT_101+BORDER_ISOLATED);
             }
